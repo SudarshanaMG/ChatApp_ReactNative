@@ -68,15 +68,16 @@ export default function Chat({goTo}: any) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons name='arrow-back-circle' color='#000' size={35} onPress={() => goTo('CoverScreen')}/>
+      
+      <View style={styles.chatBox}>
+      <ImageBackground style={styles.chatBackground} source={require('../assets/chat1.jpg')} imageStyle={{borderRadius: 20, opacity: 0.5}}>
+        <View style={styles.header}>
+        <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => goTo('CoverScreen')}/>
         <View style={styles.user}>
           <Image style={styles.avatar} source={require('../assets/avatar1.jpg')}/>
           <Text style={styles.userName}>User1</Text>
         </View>
       </View>
-      <View style={styles.chatBox}>
-      <ImageBackground style={styles.chatBackground} source={require('../assets/chat5.jpg')} imageStyle={{borderRadius: 20, opacity: 0.5}}>
         <FlatList
           data={message}
           renderItem={({item}) => 
@@ -122,7 +123,9 @@ const styles = StyleSheet.create({
     height: '7%',
     width: '100%',
     paddingTop: 10,
-    paddingStart: 2,
+    paddingStart: 10,
+    borderBottomColor: '#ffffff',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
@@ -131,7 +134,9 @@ const styles = StyleSheet.create({
   },
   userName:{
     padding: 5,
-    fontSize: 20
+    paddingRight: 20,
+    fontSize: 20,
+    fontWeight: '500'
   },
   avatar: {
     marginTop: 3,

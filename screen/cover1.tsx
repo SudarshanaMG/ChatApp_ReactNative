@@ -10,7 +10,9 @@ const CoverScreen1 = ({goTo}: any) => {
             <ImageBackground style={styles.main} source={require('../assets/chat3.webp')} imageStyle={{opacity: 0.1}}>
                 <View style={styles.box}>
                     <View style={styles.boxHeader}>
-                        <Text style={styles.headerText}>Welcome!</Text>
+                        <ImageBackground style={styles.boxHeaderImage} source={require('../assets/chat3.webp')} imageStyle={{opacity: 0.05}}>
+                            <Text style={styles.headerText}>Welcome!</Text>
+                        </ImageBackground>
                     </View>
                     <View style={styles.boxBody}>
                         <Button title="Login to User1" onPress={() => goTo('Chat')}/>
@@ -47,7 +49,14 @@ const styles = StyleSheet.create({
         height: '50%',
         width: '100%',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        overflow: 'hidden'
+    },
+    boxHeaderImage: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     headerText: {
         fontSize: 25
