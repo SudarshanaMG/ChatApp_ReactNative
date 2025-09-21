@@ -74,7 +74,7 @@ export default function Chat({goTo}: any) {
         <View style={styles.header}>
         <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => goTo('CoverScreen')}/>
         <View style={styles.user}>
-          <Image style={styles.avatar} source={require('../assets/avatar1.jpg')}/>
+          <Image style={styles.avatar} source={require('../assets/chat1.jpg')}/>
           <Text style={styles.userName}>User1</Text>
         </View>
       </View>

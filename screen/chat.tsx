@@ -10,7 +10,7 @@ import { db } from '../firebase';
 import { Ionicons } from '@react-native-vector-icons/ionicons';
 const database = db;
 
-export default function Chat({goTo}: any) {
+export default function Chat({navigation}: any) {
   const [message, setMessage] = useState(null);
   const [inputText, setInputText] = useState('');
 
@@ -70,11 +70,11 @@ export default function Chat({goTo}: any) {
     <View style={styles.container}>
       
       <View style={styles.chatBox}>
-      <ImageBackground style={styles.chatBackground} source={require('../assets/chat5.jpg')} imageStyle={{borderRadius: 20, opacity: 0.5}}>
+      <ImageBackground style={styles.chatBackground} source={require('../assets/chat1.jpg')} imageStyle={{borderRadius: 20, opacity: 0.5}}>
         <View style={styles.header}>
-          <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => goTo('CoverScreen')}/>
+          <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => navigation.navigate('CoverScreen')}/>
           <View style={styles.user}>
-            <Image style={styles.avatar} source={require('../assets/avatar1.jpg')}/>
+            <Image style={styles.avatar} source={require('../assets/chat1.jpg')}/>
             <Text style={styles.userName}>User2</Text>
           </View>
         </View>
