@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { TextInput, Text, Button } from "react-native-paper";
+import { TextInput, Text, Button, Appbar } from "react-native-paper";
 import useTokenStore from '../store/tokenStore';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../firebase';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const LoginScreen = ({navigation}: any) => {
     const [email, setEmail] = useState('');
@@ -24,6 +25,10 @@ const LoginScreen = ({navigation}: any) => {
     }
 
     return(
+        <SafeAreaView>
+            <Appbar.Header style={styles.appHeader} mode="center-aligned">
+                <Appbar.Content title="Messenger" color="white" titleStyle={{fontSize: 26}}/>
+            </Appbar.Header>
         <View style={styles.container}>
                 <View style={styles.box}>
                     <View style={styles.header}>
@@ -82,12 +87,16 @@ const LoginScreen = ({navigation}: any) => {
                     </View>
                 </View>
         </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    appHeader: {
+        backgroundColor: '#1976d2',
+    },
     container: {
-        flex: 1,
+        height: '90%',
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -107,7 +116,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     title: {
-        fontSize: 25,
+        fontSize: 20,
         color: '#000000',
         textAlign: 'center',
     },
