@@ -20,8 +20,7 @@ const RegisterScreen = ({navigation}: any) => {
             });
             const data = await response.json();
             if (response.ok) {
-                alert('Successfully registered');
-                navigation.replace('Login');
+                navigation.popTo('Login');
             } else {
                 alert(data.message || 'Registration failed!');
             }

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ImageBackground } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { TextInput, Text, Button } from "react-native-paper";
 import useTokenStore from '../store/tokenStore';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebase';
 
 const LoginScreen = ({navigation}: any) => {
     const [email, setEmail] = useState('');
@@ -10,23 +12,12 @@ const LoginScreen = ({navigation}: any) => {
     const setToken = useTokenStore((state) => state.setToken);
 
     const handleLogin = async () => {
-        const url = "https://chatapp-backend-zkol.onrender.com/login";
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                const token = data.token;
-                setToken(token);
-                navigation.replace('Home');
-            } else {
-                alert(data.message || 'Login failed!');
-            }
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const token = await user.getIdToken();
+            setToken(token);
+            navigation.navigate('Home');
         } catch (error) {
             alert('An error occurred during login. Please try again.');
         }

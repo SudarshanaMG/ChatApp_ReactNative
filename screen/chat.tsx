@@ -1,21 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, Image,
+import { View, StyleSheet, FlatList, Image,
     ImageBackground
  } from 'react-native';
+import { Text,TextInput } from 'react-native-paper';
 import {  ref, query,orderByChild, onValue, set, push } from 'firebase/database';
 import { db } from '../firebase';
 import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { auth } from '../firebase';
 const database = db;
 
-export default function Chat({navigation}: any) {
+export default function Chat({navigation, route}: any) {
+  const { user } = route.params;
+  const currentUser = auth.currentUser;
   const [message, setMessage] = useState(null);
   const [inputText, setInputText] = useState('');
+  const chatId = [auth.currentUser?.uid, user?.uid].sort().join('_');
 
   useEffect(() => {
-    const messageRef = ref(database, '/chats/chatId1/messages');
+    const messageRef = ref(database, `/chats/${chatId}/messages`);
     const loadMessages = (messageRefer: any, callback: any) => {
       const messageQuery = query(messageRefer, orderByChild('timeStamp'));
       onValue(messageQuery, (snapshot) => {
@@ -52,9 +55,9 @@ export default function Chat({navigation}: any) {
   
   const handleSubmit = () => {
     if(inputText !== ''){
-      const newMessageRef = push(ref(database, 'chats/chatId1/messages'));
+      const newMessageRef = push(ref(database, `chats/${chatId}/messages`));
       set(newMessageRef, {
-        senderId: 'user1',
+        senderId: currentUser?.uid,
         text: inputText,
         timeStamp: Date.now()
       }).then(() => {
@@ -70,19 +73,19 @@ export default function Chat({navigation}: any) {
     <View style={styles.container}>
       
       <View style={styles.chatBox}>
-      <ImageBackground style={styles.chatBackground} source={require('../assets/chat1.jpg')} imageStyle={{borderRadius: 20, opacity: 0.5}}>
+      <ImageBackground style={styles.chatBackground} source={require('../assets/chat1.jpg')} imageStyle={{borderRadius: 20, opacity: 0.1}}>
         <View style={styles.header}>
-          <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => navigation.navigate('CoverScreen')}/>
+          <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => navigation.goBack()}/>
           <View style={styles.user}>
-            <Image style={styles.avatar} source={require('../assets/chat1.jpg')}/>
-            <Text style={styles.userName}>User2</Text>
+            {/* <Image style={styles.avatar} source={require('../assets/chat1.jpg')}/> */}
+            <Text style={styles.userName}>{user?.userName || 'User'}</Text>
           </View>
         </View>
         <FlatList
           data={message}
           renderItem={({item}) => 
             (
-            <View style={[styles.chat, { alignItems: (item.senderId === 'user1') ? 'flex-end' : 'flex-start' }]}>
+            <View style={[styles.chat, { alignItems: (item.senderId === currentUser?.uid) ? 'flex-end' : 'flex-start' }]}>
               <View style={styles.chatMessageBox}>
                 <Text style={styles.chatText}>{item.text}</Text>
                 <View style={styles.chatTimeView}>
@@ -180,7 +183,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   chatBackground: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#565272ff'
   },
   chat: {
     flex: 1
