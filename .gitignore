@@ -1,7 +1,11 @@
 # OSX
 #
 .DS_Store
-
+android/build
+android/.gradle
+android/.kotlin
+assets/
+assets/firebase.js
 # Xcode
 #
 build/
