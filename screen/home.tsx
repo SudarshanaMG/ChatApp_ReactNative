@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, Image } from 'react-native';
 import { Text, List, Appbar, ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { auth } from '../store/firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,7 +20,7 @@ const HomeScreen = ({ navigation }: any) => {
                 const filtered = data.filter((u: any) => u.uid !== currentUser?.uid);
                 setUsers(filtered);
                 setLoading(false);
-                console.log(filtered);
+                // console.log(filtered);
             } catch (error) {
                 console.error('Failed to fetch users', error);
                 setLoading(false);
@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }: any) => {
                                 <List.Item
                                     title={item.userName}
                                     titleStyle={{color: '#fff'}}
-                                    left={() => <List.Icon color='#fff' icon="account" />}
+                                    left={() => <Image style={styles.avatar} source={{uri: item.imageUri}}/>}
                                     onPress={() => navigation.navigate('Chat', {user: item})}
                                     style={styles.list}
                                 />
@@ -93,6 +93,12 @@ const styles = StyleSheet.create({
         padding: 8,
         backgroundColor: '#005A9C',
         elevation: 2
+    },
+    avatar: {
+        marginTop: 3,
+        height: 30,
+        width: 30,
+        borderRadius: 50
     },
 });
 

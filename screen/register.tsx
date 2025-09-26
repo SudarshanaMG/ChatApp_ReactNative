@@ -1,31 +1,125 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
-import { TextInput, Text, Button } from "react-native-paper";
+import { View, StyleSheet, Alert, Image } from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
+import { TextInput, Text, Button, ActivityIndicator, MD2Colors } from "react-native-paper";
 
 const RegisterScreen = ({navigation}: any) => {
     const [email, setEmail] = useState('');
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    // const [loadingImage, setLoadingImage] = useState(false);
+    const [fileName, setFileName] = useState<string|undefined>(undefined);
+    const [uri, setUri] = useState<string|undefined>(undefined);
+    // const [imageUri, setImageUri] = useState<string|undefined>(undefined);
+
+    const cloudName = 'dgdi9wqbe';
+    const uploadPreset = 'user_profiles';
+
+    const pickImage = () => {
+        launchImageLibrary({mediaType: 'photo'}, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+                return;
+            }
+            if (response.errorCode) {
+                console.log('Image Picker Error: ', response.errorMessage);
+                Alert.alert('Image selection failed');
+                return;
+            }
+            if(response.assets){
+                const { uri, fileName } = response.assets[0];
+                setUri(uri);
+                setFileName(fileName);
+            }else{
+                Alert.alert('Image selection failed');
+            }
+        });
+    };
+
+    const uploadImage = async () => {
+        if(!uri){
+            Alert.alert('select an image first');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', {
+            uri: uri,
+            type: 'image/jpeg',
+            name: fileName,
+        });
+        formData.append('upload_preset', uploadPreset);
+        try {
+            const response = await axios.post(
+                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                formData,
+                {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                }
+            );
+
+            console.log('Upload response:', response);
+            if (response && response.data && response.data.secure_url) {
+                return response.data.secure_url;
+            } else {
+                console.log('Response received, but no secure_url found:', response.data);
+                Alert.alert('Upload failed', 'No image URL returned');
+                return null;
+            }
+        } catch (error: any) {
+            console.error('Upload error:', error.response?.data || error.message);
+            Alert.alert('Upload failed', 'An error occurred while uploading the image.');
+            return null;
+        }
+    }
 
     const handleSignUp = async () => {
+        setLoading(true);
         const url = "https://chatapp-backend-zkol.onrender.com/register";
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password, userName}),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                Alert.alert('Registration successful!');
-                navigation.popTo('Login');
+            let uploadedImageUri = null;
+            if (uri) {
+                uploadedImageUri = await uploadImage();
+            }
+            if (uploadedImageUri) {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, userName, imageUri: uploadedImageUri }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    Alert.alert('Registration successful!');
+                    navigation.popTo('Login');
+                } else {
+                    Alert.alert(data.message || 'Registration failed!');
+                    console.error(data);
+                }
             } else {
-                Alert.alert(data.message || 'Registration failed!');
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, userName }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    Alert.alert('Registration successful!');
+                    navigation.popTo('Login');
+                } else {
+                    Alert.alert(data.message || 'Registration failed!');
+                    console.error(data);
+                }
             }
         } catch (error) {
+            console.error(error);
             Alert.alert('An error occurred during Registering. Please try again.');
         }
     }
@@ -74,7 +168,16 @@ const RegisterScreen = ({navigation}: any) => {
                             style={styles.input}
                             contentStyle={styles.inputContent}
                         />
-                        
+                        <View style={{flexDirection: 'row',justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Button mode='contained' style={styles.loginButton} onPress={pickImage}>Pick an Image</Button>
+                        {fileName && (
+                            // <View style={{flexDirection: 'row',justifyContent: 'flex-end'}}>
+                            // <Image source={{uri: imageUri}} style={{ width: 30, height: 30, marginRight: 5, borderRadius: 50}}/>
+                            // <Text>{fileName}</Text>
+                            // </View>
+                            <Image source={{uri: uri}} style={{ width: 30, height: 30, marginRight: 5, borderRadius: 50}}/>
+                        )}
+                        </View>
                         <Button 
                             mode="contained" 
                             onPress={handleSignUp}
@@ -98,6 +201,7 @@ const RegisterScreen = ({navigation}: any) => {
                         </Text>
                     </View>
                 </View>
+                { loading && <ActivityIndicator animating={true} size={'large'} color={MD2Colors.red800} />}
         </View>
     );
 }
@@ -117,6 +221,7 @@ const styles = StyleSheet.create({
         elevation: 8,
         paddingVertical: 30,
         paddingHorizontal: 30,
+        marginBottom: 10,
     },
     header: {
         alignItems: 'center',

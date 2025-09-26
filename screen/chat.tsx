@@ -76,7 +76,7 @@ const ChatScreen = ({navigation, route}: any) => {
         <View style={styles.header}>
           <Ionicons name='arrow-back-circle' color='#f5f5f5ff' size={35} onPress={() => navigation.goBack()}/>
           <View style={styles.user}>
-            {/* <Image style={styles.avatar} source={require('../assets/chat1.jpg')}/> */}
+            <Image style={styles.avatar} source={{uri: user.imageUri}}/>
             <Text style={styles.userName}>{user?.userName || 'User'}</Text>
           </View>
         </View>
